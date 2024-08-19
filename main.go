@@ -29,7 +29,8 @@ func (h *generateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Re
 	banner := request.FormValue("artFile")
 	text = strings.ReplaceAll(text, string(rune(13)), "") // Remove carriage return characters.
 	if text == "" {
-		http.Error(writer, "400 Bad Request", http.StatusBadRequest)
+		http.Redirect(writer, request, "/404", http.StatusSeeOther)
+		// http.Error(writer, "400 Bad Request", http.StatusBadRequest)
 		return
 	}
 	ap := ""
@@ -46,10 +47,12 @@ func (h *generateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Re
 	}
 
 	if ap == "" { // Handle errors in ASCII art generation.
-		http.Error(writer, "500 Internal Server error", http.StatusInternalServerError)
+		http.Redirect(writer, request, "/500", http.StatusSeeOther)
+		// http.Error(writer, "500 Internal Server error", http.StatusInternalServerError)
 		return
 	} else if ap == "1" { // Handle specific error case for bad requests.
-		http.Error(writer, "400 Bad Request", http.StatusBadRequest)
+		http.Redirect(writer, request, "/400", http.StatusSeeOther)
+		// http.Error(writer, "400 Bad Request", http.StatusBadRequest)
 		return
 	}
 
@@ -61,7 +64,16 @@ func (h *generateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Re
 type notFound struct{}
 
 func (h *notFound) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	http.Error(writer, "404", 404)
+	tmpl := template.Must(template.ParseFiles("templates/badRequest.html"))
+	tmpl.Execute(writer, nil)
+	// http.Error(writer, "404", 404)
+}
+
+type serverError struct{}
+
+func (h *serverError) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	tmpl := template.Must(template.ParseFiles("templates/serverError.html"))
+	tmpl.Execute(writer, nil)
 }
 
 func main() {
@@ -86,7 +98,8 @@ func main() {
 		}
 	})
 	http.Handle("/ascii-art", generate) // Handle ASCII art generation requests.
-	http.Handle("/404", notfound)       // Handle 404 errors.
+	http.Handle("/400", notfound)       // Handle 404 errors.
+	http.Handle("/500", &serverError{})
 
 	fmt.Println("Server Initiated at http://127.0.0.1:8080")
 	server.ListenAndServe() // Start the server and listen for requests.
