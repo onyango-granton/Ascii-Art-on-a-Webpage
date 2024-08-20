@@ -27,12 +27,14 @@ type generateHandler struct{}
 func (h *generateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	text := request.FormValue("text")
 	banner := request.FormValue("artFile")
-	text = strings.ReplaceAll(text, string(rune(13)), "") // Remove carriage return characters.
+
 	if text == "" {
-		http.Redirect(writer, request, "/404", http.StatusSeeOther)
+		http.ServeFile(writer, request, "templates/badRequest.html")
+		//http.Redirect(writer, request, "/404", http.StatusSeeOther)
 		// http.Error(writer, "400 Bad Request", http.StatusBadRequest)
 		return
 	}
+	text = strings.ReplaceAll(text, string(rune(13)), "") // Remove carriage return characters.
 	ap := ""
 
 	switch banner {
@@ -47,12 +49,10 @@ func (h *generateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Re
 	}
 
 	if ap == "" { // Handle errors in ASCII art generation.
-		http.Redirect(writer, request, "/500", http.StatusSeeOther)
-		// http.Error(writer, "500 Internal Server error", http.StatusInternalServerError)
+		http.ServeFile(writer, request, "templates/serverError.html")
 		return
 	} else if ap == "1" { // Handle specific error case for bad requests.
-		http.Redirect(writer, request, "/400", http.StatusSeeOther)
-		// http.Error(writer, "400 Bad Request", http.StatusBadRequest)
+		http.ServeFile(writer, request, "templates/badRequest.html")
 		return
 	}
 
@@ -64,15 +64,7 @@ func (h *generateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Re
 type notFound struct{}
 
 func (h *notFound) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	tmpl := template.Must(template.ParseFiles("templates/badRequest.html"))
-	tmpl.Execute(writer, nil)
-	// http.Error(writer, "404", 404)
-}
-
-type serverError struct{}
-
-func (h *serverError) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	tmpl := template.Must(template.ParseFiles("templates/serverError.html"))
+	tmpl := template.Must(template.ParseFiles("templates/notFound.html"))
 	tmpl.Execute(writer, nil)
 }
 
@@ -98,8 +90,6 @@ func main() {
 		}
 	})
 	http.Handle("/ascii-art", generate) // Handle ASCII art generation requests.
-	http.Handle("/400", notfound)       // Handle 404 errors.
-	http.Handle("/500", &serverError{})
 
 	fmt.Println("Server Initiated at http://127.0.0.1:8080")
 	server.ListenAndServe() // Start the server and listen for requests.
