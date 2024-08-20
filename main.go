@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"text/template"
 
@@ -30,8 +31,7 @@ func (h *generateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Re
 
 	if text == "" {
 		http.ServeFile(writer, request, "templates/badRequest.html")
-		//http.Redirect(writer, request, "/404", http.StatusSeeOther)
-		// http.Error(writer, "400 Bad Request", http.StatusBadRequest)
+
 		return
 	}
 	text = strings.ReplaceAll(text, string(rune(13)), "") // Remove carriage return characters.
@@ -56,8 +56,8 @@ func (h *generateHandler) ServeHTTP(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	tmpl := template.Must(template.ParseFiles("templates/index.html")) // Parse the HTML template again.
-	tmpl.Execute(writer, struct{ Art string }{Art: ap})                // Execute the template with the generated ASCII art.
+	tmpl := template.Must(template.ParseFiles("templates/index.html"))
+	tmpl.Execute(writer, struct{ Art string }{Art: ap})
 }
 
 // notFound handles 404 errors for undefined routes.
@@ -73,6 +73,10 @@ func main() {
 	generate := &generateHandler{}
 	notfound := &notFound{}
 
+	if len(os.Args) != 1 {
+		fmt.Println("Usage:'go run .' or\n'go run main.go'")
+		return
+	}
 	// Create a new HTTP server.
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
