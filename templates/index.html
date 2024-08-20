@@ -25,23 +25,23 @@
                 <textarea name="text" id="" cols="50" rows="10" required></textarea><br>
             </div>
             <div class="banner">
-                <h4>Choose Art File:</h4>
-                <label for="standard">Standard</label>
-                <input type="radio" id="standard" name="artFile" value="standard" checked><br>
-                <label for="shadow">Shadow</label>
-                <input type="radio" id="shadow" name="artFile" value="shadow"><br>
-                <label for="thinkertoy">ThinkerToy</label>
-                <input type="radio" id="thinkertoy" name="artFile" value="thinkertoy"><br>
-    
+                <h4 style="margin-bottom: 0px;">Choose Art File:</h4>
+                <div><label for="standard">Standard</label>
+                <input type="radio" id="standard" name="artFile" value="standard" checked><br></div>
+                <div><label for="shadow">Shadow</label>
+                <input type="radio" id="shadow" name="artFile" value="shadow"><br></div>
+                <div><label for="thinkertoy">ThinkerToy</label>
+                <input type="radio" id="thinkertoy" name="artFile" value="thinkertoy"><br></div>
+                <input class="submit" type="submit" value="Generate ASCII Art">
             </div>
     
-            <input class="submit" type="submit" value="Generate ASCII Art">
+            
         </form>
         
     </div>
     <div class="displayDiv">
 
-        <h2>Your ASCII Art:</h2>
+        <center><h2>Your ASCII Art:</h2></center>
         <pre>{{.Art}}</pre>
     
         
