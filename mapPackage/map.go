@@ -1,6 +1,7 @@
 package mapPackage
 
 import (
+	"ascii-web-art/utils"
 	"fmt"
 	"os"
 	"strings"
@@ -13,37 +14,36 @@ func AsciiMapping(patternFile string) map[rune][]string {
 
 	if patternFile == "thinkertoy.txt" {
 		testfile, err1 := os.ReadFile(patternFile)
+		if !(utils.CheckFileIntegrity(testfile)){
+			fmt.Fprintln(os.Stderr, "error:", patternFile, "has been modified")
+			return map[rune][]string{}
+		}
 		if len(testfile) == 0 {
 			fmt.Fprintln(os.Stderr, "error:", patternFile, "is empty or doesn't exist ")
-			// os.Exit(1)
 			return map[rune][]string{}
 		} else if err1 != nil {
 			fmt.Println(err1.Error())
-			// os.Exit(1)
 			return map[rune][]string{}
 		}
 
 		splitted = strings.Split(string(testfile), "\r\n") // strings of thinkeratoi are seperated by \r\n [13,10]
 	} else {
 		testfile, err := os.ReadFile(patternFile)
+		if !(utils.CheckFileIntegrity(testfile)){
+			fmt.Fprintln(os.Stderr, "error:", patternFile, "has been modified")
+			return map[rune][]string{}
+		}
 		if len(testfile) == 0 {
 			fmt.Println("error:", patternFile, "is empty")
-			// os.Exit(1)
 			return map[rune][]string{}
 		}
 		if err != nil {
 			fmt.Println(err.Error())
-			// os.Exit(1)
 			return map[rune][]string{}
 		}
 
 		splitted = strings.Split(string(testfile), "\n")
 	}
-
-	// if len(splitted) != 856 {
-	// 	fmt.Printf("error : %v file modified, exiting...\n", patternFile)
-	// 	os.Exit(1)
-	// }
 
 	asciiMapping := make(map[rune][]string)
 	startAscii := ' '
