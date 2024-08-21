@@ -64,7 +64,7 @@ func PrintingAscii(text, patternFile, color, subString string) string {
 	for _, word := range lines { // case of multiple newlines
 		for n := 0; n < 8; n++ {
 			for _, ch := range word {
-				res += asciiMap[ch][n] 
+				res += asciiMap[ch][n]
 			}
 			res += "\n"
 		}
