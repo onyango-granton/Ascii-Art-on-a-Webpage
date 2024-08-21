@@ -14,7 +14,7 @@ func AsciiMapping(patternFile string) map[rune][]string {
 
 	if patternFile == "thinkertoy.txt" {
 		testfile, err1 := os.ReadFile(patternFile)
-		if !(utils.CheckFileIntegrity(testfile)){
+		if !(utils.CheckFileIntegrity(testfile)) {
 			fmt.Fprintln(os.Stderr, "error:", patternFile, "has been modified")
 			return map[rune][]string{}
 		}
@@ -29,7 +29,7 @@ func AsciiMapping(patternFile string) map[rune][]string {
 		splitted = strings.Split(string(testfile), "\r\n") // strings of thinkeratoi are seperated by \r\n [13,10]
 	} else {
 		testfile, err := os.ReadFile(patternFile)
-		if !(utils.CheckFileIntegrity(testfile)){
+		if !(utils.CheckFileIntegrity(testfile)) {
 			fmt.Fprintln(os.Stderr, "error:", patternFile, "has been modified")
 			return map[rune][]string{}
 		}
